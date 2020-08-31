@@ -13,20 +13,18 @@ router.get("/", async (req, res, next)=>{
     }
 });
 
-router.post("/", (req, res) => {
-    const projectData = req.body;
-    if (!projectData || !projectData.name) {
-        res.status(500).json({ message: "The project name is required" });
-      } else {
-    project
-        .addProject(projectData)
-        .then(project => {
-            res.status(201).json(project);
-        })
-        .catch(err => {
-            res.status(500).json({ message: "Failed to create new project" });
-        });
-      }
+router.post("/", async (req, res, next) => {
+    try{
+        if (!req.body || !req.body.name) {
+            res.status(500).json({ message: "The project name is required" });
+          }
+          const newproject = await project.addProject(req.body)
+     
+          res.status(201).json(newproject)
+    }catch(err){
+        next(err)
+    }
+       
 });
 
 module.exports = router;

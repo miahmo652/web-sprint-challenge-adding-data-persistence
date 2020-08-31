@@ -3,7 +3,7 @@ const resource = require("../models/resource");
 
 const router = express.Router();
 
-router.get("/resource", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
         const resources = await resource.getResources();
         res.json(resources);
@@ -12,17 +12,20 @@ router.get("/resource", async (req, res, next) => {
     }
 });
 
-router.post("/resource", (req, res) => {
-    const resourceData = req.body;
-
-    resource
-        .addResource(resourceData)
-        .then(resource => {
-            res.status(201).json(resource);
-        })
-        .catch(err => {
-            res.status(500).json({ message: "Failed to create new resource" });
-        });
-});
-
+router.post("/", async (req, res, next) => {
+    try{
+      if(!req.body || !req.body.name){
+        res.status(500).json({message:"name is required" })
+      }
+    const newresource = await resource.addResource(req.body)
+         
+    res.status(201).json(newresource)
+    
+    }catch(err){
+      next(err)
+    
+    }
+       
+    });
+    
 module.exports = router;
